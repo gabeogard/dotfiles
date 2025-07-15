@@ -1,36 +1,51 @@
 #!/bin/bash
+
+
 if ! command -v gum &> /dev/null; then
     echo "Gum is required. Install with: brew install gum"
     exit 1
 fi
 
 REPO_ROOT=$(pwd)
+CONFIG_DIR="$HOME/.config"
+TARGET_DOTDIR="$REPO_ROOT"
 
 gum style --foreground 212 --border double --padding "1 2" --margin "1" \
-    "Dotfiles Installer: Setting up symlinks in ~/.config"
+    "Dotfiles Installer: Dynamically symlinking packages to ~/.config"
 
-gum log --level info "Checking ~/.config..."
-if [ ! -d "$HOME/.config" ]; then
-    gum spin --spinner dot --title "Creating ~/.config..." -- sleep 1
-    mkdir -p "$HOME/.config"
-    gum log --level info "~/.config created."
+gum log --level info "Checking $CONFIG_DIR..."
+if [ ! -d "$CONFIG_DIR" ]; then
+    gum spin --spinner dot --title "Creating $CONFIG_DIR..." -- sleep 1
+    mkdir -p "$CONFIG_DIR"
+    gum log --level info "$CONFIG_DIR created."
 else
-    gum log --level info "~/.config already exists."
+    gum log --level info "$CONFIG_DIR already exists."
 fi
 
 BACKUP_DIR="$HOME/.config.backup/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
-DIRS=("nvim" "aerospace" "zsh" "ohmyposh" "alacritty")
-
-for dir in "${DIRS[@]}"; do
-    SOURCE="$REPO_ROOT/$dir"
-    TARGET="$HOME/.config/$dir"
-    
-    if [ ! -d "$SOURCE" ]; then
-        gum log --level error "Source $SOURCE does not exist; skipping."
-        continue
+gum log --level info "Discovering packages in $TARGET_DOTDIR..."
+PACKAGES=()
+for dir in "$TARGET_DOTDIR"/*/; do
+    if [ -d "$dir" ]; then
+        basename_dir=$(basename "$dir")
+        if [ "$basename_dir" != ".git" ]; then
+            PACKAGES=("${PACKAGES[@]}" "$basename_dir")
+        fi
     fi
+done
+
+if [ ${#PACKAGES[@]} -eq 0 ]; then
+    gum log --level error "No packages found in $TARGET_DOTDIR."
+    exit 2
+fi
+
+gum log --level info "Found packages: ${PACKAGES[*]}"
+
+for pkg in "${PACKAGES[@]}"; do
+    SOURCE="$REPO_ROOT/$pkg"
+    TARGET="$CONFIG_DIR/$pkg"
     
     gum log --level info "Checking $TARGET..."
     
@@ -41,8 +56,8 @@ for dir in "${DIRS[@]}"; do
     
     if [ -e "$TARGET" ]; then
         if gum confirm "Target $TARGET exists. Backup and replace with symlink?"; then
-            gum spin --spinner dot --title "Backing up $TARGET..." -- mv "$TARGET" "$BACKUP_DIR/$(basename "$TARGET")"
-            gum log --level info "Backed up to $BACKUP_DIR/$(basename "$TARGET")"
+            gum spin --spinner dot --title "Backing up $TARGET..." -- mv "$TARGET" "$BACKUP_DIR/$pkg"
+            gum log --level info "Backed up to $BACKUP_DIR/$pkg"
         else
             gum log --level warn "Skipping $TARGET."
             continue
@@ -55,28 +70,23 @@ done
 
 ZSHRC_SOURCE="$REPO_ROOT/.zshrc"
 ZSHRC_TARGET="$HOME/.zshrc"
-
-if [ ! -f "$ZSHRC_SOURCE" ]; then
-    gum log --level error "Source $ZSHRC_SOURCE does not exist; skipping."
-else
-    gum log --level info "Checking $ZSHRC_TARGET..."
-    
+if [ -f "$ZSHRC_SOURCE" ]; then
+    gum log --level info "Handling loose .zshrc (consider moving to zsh/ for auto-symlinking)..."
     if [ -L "$ZSHRC_TARGET" ] && [ "$(readlink "$ZSHRC_TARGET")" = "$ZSHRC_SOURCE" ]; then
-        gum log --level info "$ZSHRC_TARGET is already symlinked to repo; skipping."
+        gum log --level info "$ZSHRC_TARGET already symlinked; skipping."
     else
         if [ -e "$ZSHRC_TARGET" ]; then
-            if gum confirm "Target $ZSHRC_TARGET exists. Backup and replace with symlink?"; then
+            if gum confirm "Target $ZSHRC_TARGET exists. Backup and symlink?"; then
                 gum spin --spinner dot --title "Backing up $ZSHRC_TARGET..." -- mv "$ZSHRC_TARGET" "$BACKUP_DIR/.zshrc"
                 gum log --level info "Backed up to $BACKUP_DIR/.zshrc"
             else
                 gum log --level warn "Skipping $ZSHRC_TARGET."
             fi
         fi
-        
         gum spin --spinner dot --title "Symlinking $ZSHRC_SOURCE to $ZSHRC_TARGET..." -- ln -s "$ZSHRC_SOURCE" "$ZSHRC_TARGET"
         gum log --level info "Symlinked $ZSHRC_TARGET."
     fi
 fi
 
 gum style --foreground 46 --border rounded --padding "1 2" --margin "1" \
-    "Setup complete! Backups in $BACKUP_DIR if any. Run 'source ~/.zshrc' if needed."
+    "Setup complete! Backups in $BACKUP_DIR if any. Run 'source ~/.zshrc' if needed. Add new dirs to repo for auto-symlinking."
