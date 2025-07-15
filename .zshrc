@@ -30,8 +30,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias l='ls -l --sort time'
-alias zshrcu="source ~/.config/.zshrc"
-alias zshrc="nvim ~/.config/.zshrc"
+alias zshrcu="source ~/.zshrc"
+alias zshrc="nvim ~/.zshrc"
 alias zsh_profile_startup="time ZSH_DEBUGRC=1 zsh -i -c exit"
 
 # Conditional aliases and styles for eza/ls
