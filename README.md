@@ -12,7 +12,8 @@ For my personal use. Reuse at your own risk.
 - **zsh/**: Custom ZSH scripts and plugins (symlinked to `~/.config/zsh`).
 - **ohmyposh/**: Oh My Posh theme and configuration (symlinked to `~/.config/ohmyposh`).
 - **alacritty/**: Alacritty terminal theming and settings (symlinked to `~/.config/alacritty`).
-- **install.sh**: Bash script to create symlinks and set up the configurations
+- **install.sh**: Bash script to install all applications i use for development (this will also run init_symlinks.sh)
+- **init_symlinks.sh**: Bash script to create symlinks and set up the configurations
 
 ## Prerequisites
 
