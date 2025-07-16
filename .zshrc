@@ -83,5 +83,12 @@ zinit ice wait'!' lucid nocd \
   atload='_omp_precmd'
 zinit snippet "${XDG_CONFIG_HOME:-${HOME}/.config}/zsh/ohmyposh.zsh"
 
+sync_dotfiles() {
+  cd ~/.config/dotfiles || return 1
+  git pull || return 1
+  sh init_symlinks.sh || return 1
+  cd - > /dev/null
+}
+
 # Debug profiling (end)
 [[ -n "${ZSH_DEBUGRC+1}" ]] && zprof
