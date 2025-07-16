@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if ! command -v gum &> /dev/null; then
     echo "Gum is required. Install with: brew install gum"
     exit 1
@@ -85,6 +84,35 @@ if [ -f "$ZSHRC_SOURCE" ]; then
         fi
         gum spin --spinner dot --title "Symlinking $ZSHRC_SOURCE to $ZSHRC_TARGET..." -- ln -s "$ZSHRC_SOURCE" "$ZSHRC_TARGET"
         gum log --level info "Symlinked $ZSHRC_TARGET."
+    fi
+fi
+
+TMUXCONF_SOURCE="$REPO_ROOT/.tmux.conf"
+TMUXCONF_TARGET="$HOME/.tmux.conf"
+if [ -f "$TMUXCONF_SOURCE" ]; then
+    gum log --level info "Handling loose .tmux.conf (consider moving to tmux/ for auto-symlinking)..."
+    if [ -L "$TMUXCONF_TARGET" ] && [ "$(readlink "$TMUXCONF_TARGET")" = "$TMUXCONF_SOURCE" ]; then
+        gum log --level info "$TMUXCONF_TARGET already symlinked; skipping."
+    else
+        if [ -e "$TMUXCONF_TARGET" ]; then
+            if gum confirm "Target $TMUXCONF_TARGET exists. Backup and symlink?"; then
+                gum spin --spinner dot --title "Backing up $TMUXCONF_TARGET..." -- mv "$TMUXCONF_TARGET" "$BACKUP_DIR/.tmux.conf"
+                gum log --level info "Backed up to $BACKUP_DIR/.tmux.conf"
+            else
+                gum log --level warn "Skipping $TMUXCONF_TARGET."
+            fi
+        fi
+        gum spin --spinner dot --title "Symlinking $TMUXCONF_SOURCE to $TMUXCONF_TARGET..." -- ln -s "$TMUXCONF_SOURCE" "$TMUXCONF_TARGET"
+        gum log --level info "Symlinked $TMUXCONF_TARGET."
+    fi
+
+    # Install TPM if not already present
+    TPM_DIR="$HOME/.tmux/plugins/tpm"
+    if [ ! -d "$TPM_DIR" ]; then
+        gum spin --spinner dot --title "Cloning tmux plugin manager (TPM)..." -- git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+        gum log --level info "TPM cloned to $TPM_DIR."
+    else
+        gum log --level info "TPM already exists at $TPM_DIR; skipping clone."
     fi
 fi
 
