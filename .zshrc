@@ -19,6 +19,9 @@ export SAVEHIST=$HISTSIZE
 export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
 export DOCKER_HOST=unix://$HOME/.colima/default/docker.sock
 export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.tmuxifier/bin:$PATH"
+
+eval "$(tmuxifier init -)"
 
 # Source external files
 [[ -e ~/bin/source_env ]] && source ~/bin/source_env
