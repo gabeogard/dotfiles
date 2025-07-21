@@ -1,17 +1,17 @@
-# Debug profiling (if enabled)
 [[ -n "${ZSH_DEBUGRC+1}" ]] && zmodload zsh/zprof
 
-# Zinit setup
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Shell options
-setopt promptsubst          # Required for theme
-setopt inc_append_history   # Save every command before execution
+zinit light zsh-users/zsh-syntax-highlighting
+setopt promptsubst   
+setopt inc_append_history
+setopt hist_ignore_all_dups
+setopt hist_find_no_dups
 
-# Environment variables
+
 export EDITOR=vim
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
@@ -21,13 +21,9 @@ export DOCKER_HOST=unix://$HOME/.colima/default/docker.sock
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.tmuxifier/bin:$PATH"
 
-eval "$(tmuxifier init -)"
-
-# Source external files
 [[ -e ~/bin/source_env ]] && source ~/bin/source_env
 [[ -e ~/.env ]] && source ~/.env
 
-# Aliases
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -37,7 +33,6 @@ alias zshrcu="source ~/.zshrc"
 alias zshrc="nvim ~/.zshrc"
 alias zsh_profile_startup="time ZSH_DEBUGRC=1 zsh -i -c exit"
 
-# Conditional aliases and styles for eza/ls
 if command -v eza &> /dev/null; then
   zstyle ':completion:*' list-colors "${(s.:.)EZA_COLORS}"
   zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree --level=3 --color=always $realpath'
@@ -50,22 +45,21 @@ else
   alias ls="ls --color"
 fi
 
-# Key bindings
-bindkey -e                  # Emacs keybindings (for tmux compatibility)
-bindkey \^U backward-kill-line  # Restore CTRL+U to kill backward
+bindkey -e
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+
+bindkey \^U backward-kill-line
 autoload edit-command-line; zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
-# Completion styles
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' menu no  # Handled by fzf
+zstyle ':completion:*' menu no  
 
-# Zinit plugins
 zinit wait lucid for \
   OMZL::git.zsh \
   OMZP::git
 
-# Temporary prompt until theme loads
 
 zinit wait lucid light-mode for \
   atinit"zicompinit; zicdreplay" \

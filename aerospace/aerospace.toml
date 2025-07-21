@@ -31,6 +31,7 @@ automatically-unhide-macos-hidden-apps = false
     shift-ctrl-alt-cmd-b = 'exec-and-forget open -n /Applications/Chrome.app'
     shift-ctrl-alt-cmd-i = 'exec-and-forget open -a /Applications/IntelliJ.app'
     shift-ctrl-alt-cmd-d = 'exec-and-forget open -a /Applications/Discord.app'
+    shift-ctrl-alt-cmd-w = 'exec-and-forget open -a /Applications/Whatsapp.app'
     alt-slash = 'layout tiles horizontal vertical'
     alt-comma = 'layout accordion horizontal vertical'
 
