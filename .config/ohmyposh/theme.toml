@@ -1,0 +1,52 @@
+version = 3
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+
+  [[blocks.segments]]
+    template = '{{ .UserName }} '
+    foreground = '#7E46B6'
+    type = 'session'
+    style = 'plain'
+
+  [[blocks.segments]]
+    template = 'in '
+    foreground = '#ffffff'
+    type = 'text'
+    style = 'plain'
+
+  [[blocks.segments]]
+    template = '{{ .Path }} '
+    foreground = '#87FF00'
+    type = 'path'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      style = 'full'
+
+  [[blocks.segments]]
+    template = '<#ffffff>on</> {{ .HEAD }}{{ if .Staging.Changed }}<#87FF00> ● {{ .Staging.String }}</>{{ end }}{{ if .Working.Changed }}<#D75F00> ● {{ .Working.String }}</>{{ end }} '
+    foreground = '#5FD7FF'
+    type = 'git'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      branch_ahead_icon = ''
+      branch_behind_icon = ''
+      branch_gone_icon = ''
+      branch_icon = ''
+      branch_identical_icon = ''
+      cherry_pick_icon = ''
+      commit_icon = ''
+      fetch_status = true
+      merge_icon = ''
+      rebase_icon = ''
+      revert_icon = ''
+      tag_icon = ''
+
+  [[blocks.segments]]
+    template = 'λ '
+    foreground = '#D75F00'
+    type = 'text'
+    style = 'plain'

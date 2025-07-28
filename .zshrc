@@ -28,7 +28,6 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
-alias l='ls -l --sort time'
 alias zshrcu="source ~/.zshrc"
 alias zshrc="nvim ~/.zshrc"
 alias zsh_profile_startup="time ZSH_DEBUGRC=1 zsh -i -c exit"
@@ -37,7 +36,7 @@ if command -v eza &> /dev/null; then
   zstyle ':completion:*' list-colors "${(s.:.)EZA_COLORS}"
   zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree --level=3 --color=always $realpath'
   zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza --tree --level=3 --color=always $realpath'
-  alias ls="eza --icons=always"
+  alias l="eza --icons=always --all --show-symlinks --oneline --git-ignore"
 else
   zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
   zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
